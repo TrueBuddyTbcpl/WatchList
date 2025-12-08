@@ -20,7 +20,7 @@ export default function ReportPreview({ reportData }) {
         }
 
         try {
-            await axios.post("http://localhost:5001/send-report", {
+            await axios.post("https://report-mailer-backend.onrender.com/send-report", {
                 ...data,
                 sendTo: email
             });
