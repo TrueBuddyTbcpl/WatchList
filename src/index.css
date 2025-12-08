@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+
+@media print {
+  /* Only print the preview area */
+  body * {
+    visibility: hidden;
+  }
+
+  #print-area, #print-area * {
+    visibility: visible;
+  }
+
+  /* Position print content at top-left */
+  #print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+  }
+
+  /* Preserve UI colors in PDF */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Maintain 2-column layout */
+  .grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Proper PDF page size */
+@page {
+  size: A4;
+  margin: 10mm;
+}
