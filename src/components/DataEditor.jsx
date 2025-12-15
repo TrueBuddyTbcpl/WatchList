@@ -4,21 +4,56 @@ export default function DataEditor({ reportData, setReportData }) {
     setReportData({ ...reportData, [e.target.name]: e.target.value });
   };
 
-  const handleCSV = (e) => {
-    const raw = e.target.value.trim().split("\n").slice(1);
-    const rows = raw.map(line => {
-      const cols = line.split(",");
-      return {
-        section: cols[0],
-        date: cols[1],
-        title: cols[2],
-        meta: cols[3],
-        summary: cols[4],
-        source: cols[5]?.replace(/^"|"$/g, '').trim(),
+ const handleCSV = (e) => {
+  const text = e.target.value.trim();
+
+  const rows = [];
+  let current = "";
+  let insideQuotes = false;
+
+  for (let char of text) {
+    if (char === '"') insideQuotes = !insideQuotes;
+    if (char === "\n" && !insideQuotes) {
+      rows.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  if (current) rows.push(current);
+
+  const dataRows = rows.slice(1);
+
+  const parsed = dataRows.map(row => {
+    const cols = [];
+    let value = "";
+    insideQuotes = false;
+
+    for (let char of row) {
+      if (char === '"') {
+        insideQuotes = !insideQuotes;
+      } else if (char === "," && !insideQuotes) {
+        cols.push(value.trim());
+        value = "";
+      } else {
+        value += char;
       }
-    });
-    setReportData({ ...reportData, rows });
-  };
+    }
+    cols.push(value.trim());
+
+    return {
+      section: cols[0],
+      date: cols[1],
+      title: cols[2],
+      meta: cols[3],
+      summary: cols[4]?.replace(/^"|"$/g, ""),
+      source: cols[5]?.replace(/^"|"$/g, ""),
+    };
+  });
+
+  setReportData({ ...reportData, rows: parsed });
+};
+
 
   return (
     <div className="bg-white p-4 rounded-xl shadow">

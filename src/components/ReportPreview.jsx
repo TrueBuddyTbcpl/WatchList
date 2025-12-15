@@ -36,13 +36,13 @@ export default function ReportPreview({ reportData }) {
     return (
         <>
             <div id="print-area" className="bg-white rounded-xl shadow overflow-hidden">
-                
+
                 {/* HEADER */}
                 <header className="bg-gradient-to-r from-cyan-700 to-blue-500 p-6 text-white flex gap-6 items-center">
 
                     {/* ⭐ FIXED TRUE BUDDY LOGO (Perfectly aligned) */}
                     <div className="relative inline-block">
-                        
+
                         {/* TRUE BUDDY FRAME */}
                         <div className="border-4 border-[#5bb8ff] px-2 py-4 rounded-sm inline-block bg-[#0f6b86]">
                             <span className="text-white font-extrabold tracking-[4px] text-[17px] block">
@@ -92,7 +92,23 @@ export default function ReportPreview({ reportData }) {
                                     <span className="text-xs text-gray-500">{item.date}</span>
                                     <p className="font-semibold">{item.title}</p>
                                     <p className="text-xs text-gray-600">{item.meta}</p>
-                                    <p className="text-sm">{item.summary}</p>
+                                    {item.section === "Analysis" && "Recommendation" ? (
+                                        <ol className="list-decimal ml-5 mt-2 space-y-2 text-sm text-gray-800">
+                                            {item.summary
+                                                .split("\n")
+                                                .filter(Boolean)
+                                                .map((point, idx) => (
+                                                    <li key={idx}>
+                                                        {point.replace(/^\d+\.\s*/, "")}
+                                                    </li>
+                                                ))}
+                                        </ol>
+                                    ) : (
+                                        <p className="text-sm whitespace-pre-line">
+                                            {item.summary}
+                                        </p>
+                                    )}
+
                                     {item.source && (
                                         <a href={item.source} target="_blank" className="text-cyan-700 text-xs">
                                             Source
