@@ -1,0 +1,43 @@
+/* ===============================
+   TRUE BUDDY LOGO (SAFE FOR PRINT)
+   =============================== */
+
+.tb-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.tb-logo-main {
+  background: #0f6b86;
+  border: 4px solid #5bb8ff;
+  color: white;
+  font-weight: 800;
+  letter-spacing: 4px;
+  font-size: 17px;
+  padding: 10px 12px;
+}
+
+.tb-logo-sub {
+  background: #5bb8ff;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: -2px;
+}
+
+/* ===============================
+   PRINT OVERRIDES
+   =============================== */
+@media print {
+  .tb-logo {
+    transform: none !important;
+  }
+
+  .tb-logo-main,
+  .tb-logo-sub {
+    box-shadow: none !important;
+  }
+}
