@@ -159,6 +159,26 @@ export default function ReportPreview({ reportData }) {
                     Print / Save as PDF
                 </button>
             </div>
+            <footer className="bg-gradient-to-r from-cyan-700 to-blue-500 text-white px-4 py-3 text-xs">
+
+                {/* Disclaimer */}
+                <div className="mb-2 text-center leading-snug opacity-90" style={{ textAlign: "justify", textJustify: "inter-word" }}>
+                    Disclaimer – This document is based on publicly available information and field-level inputs compiled for general awareness and risk-intelligence purposes only.
+                    It does not constitute legal advice, investigative findings, or a determination of liability.
+                    Readers are advised to conduct independent verification and seek appropriate professional counsel
+                    before taking any action based on this information.
+                </div>
+                {/* Footer Meta */}
+                <div className="flex justify-between items-center border-t border-white/30 pt-2">
+                    <div>
+                        Prepared by <strong>True Buddy Consulting Pvt Ltd</strong> · Period: {reportData.period}
+                    </div>
+                    <div>
+                        Contact: contact@tbcpl.co.in
+                    </div>
+                </div>
+
+            </footer>
 
             {/* EMAIL MODAL */}
             {showEmailModal && (
