@@ -78,10 +78,7 @@ export default function ReportPreview({ reportData, setReportData }) {
                 return (
                     <div key={i} className="border-b py-4">
 
-                        {/* DATE */}
-                        <div className="text-xs text-gray-500 mb-1">
-                            {item.date}
-                        </div>
+                        
 
                         {/* TITLE */}
                         {isEditing ? (
