@@ -17,7 +17,10 @@
   font-weight: 800;
   letter-spacing: 4px;
   font-size: 17px;
-  padding: 10px 12px;
+  padding-top: 5px;
+  padding-bottom: 17px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 .tb-logo-sub {
@@ -25,7 +28,7 @@
   color: white;
   font-size: 14px;
   font-weight: 600;
-  margin-top: -2px;
+  margin-top: -14px;
 }
 
 /* ===============================
