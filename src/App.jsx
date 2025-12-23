@@ -8,7 +8,7 @@ export default function App() {
     period: "18 Oct 2025 — 24 Oct 2025",
     compiled: "True Buddy Consulting Pvt Ltd",
 
-    // ✅ REQUIRED SECTION ARRAYS
+    // REQUIRED SECTION ARRAYS
     india: [],
     international: [],
     analysis: [],
@@ -33,9 +33,9 @@ export default function App() {
 
         {/* RIGHT: REPORT PREVIEW */}
         <div className="lg:col-span-2">
-          
           <ReportPreview
             reportData={reportData}
+            setReportData={setReportData}
           />
         </div>
 

@@ -2,95 +2,175 @@ import { useState } from "react";
 import axios from "axios";
 import "./preview.css";
 
-export default function ReportPreview({ reportData }) {
+export default function ReportPreview({ reportData, setReportData }) {
     const [showEmailModal, setShowEmailModal] = useState(false);
+    const [editing, setEditing] = useState(null); // { section, index }
 
+    // ===============================
+    // HELPERS
+    // ===============================
+    const updateItem = (section, index, field, value) => {
+        setReportData(prev => {
+            const updated = [...prev[section]];
+            updated[index] = { ...updated[index], [field]: value };
+            return { ...prev, [section]: updated };
+        });
+    };
+
+    const deleteItem = (section, index) => {
+        setReportData(prev => {
+            const updated = [...prev[section]];
+            updated.splice(index, 1);
+            return { ...prev, [section]: updated };
+        });
+        setEditing(null);
+    };
+
+    // ===============================
+    // EMAIL
+    // ===============================
     const sendEmail = async () => {
         const email = document.getElementById("recipientEmail").value;
-
-        if (!email) {
-            alert("Please enter recipient email.");
-            return;
-        }
+        if (!email) return alert("Please enter recipient email.");
 
         try {
             await axios.post(
                 "https://report-mailer-backend.onrender.com/send-report",
-                {
-                    ...reportData,
-                    sendTo: email
-                }
+                { ...reportData, sendTo: email }
             );
-
             alert("Report emailed successfully!");
             setShowEmailModal(false);
-        } catch (error) {
-            console.error(error);
+        } catch {
             alert("Failed to send email.");
         }
     };
 
-    const renderSection = (title, items, numbered = false) => (
+    // ===============================
+    // MULTI-LINE → NUMBERED LIST
+    // ===============================
+    const renderNumberedPoints = (text) => {
+        if (!text) return null;
+        return text
+            .split("\n")
+            .map(line => line.trim())
+            .filter(Boolean)
+            .map((line, idx) => (
+                <li key={idx} className="mb-1">
+                    {line}
+                </li>
+            ));
+    };
 
-
+    // ===============================
+    // SECTION RENDER
+    // ===============================
+    const renderSection = (sectionKey, title, items, numbered = false) => (
         <section className="bg-white border rounded-lg p-4">
             <h2 className="text-center text-sm font-extrabold text-white
-        bg-gradient-to-r from-cyan-700 to-blue-500 px-3 py-1 rounded-md shadow mb-3">
-                {title}
-            </h2>
+        bg-gradient-to-r from-cyan-700 to-blue-500 px-3 py-1 rounded-md shadow mb-3">{title}</h2>
 
-            {items.length === 0 && (
-                <p className="text-xs text-gray-400 text-center">
-                    No data available
-                </p>
-            )}
+            {items.map((item, i) => {
+                const isEditing =
+                    editing &&
+                    editing.section === sectionKey &&
+                    editing.index === i;
 
-            {numbered ? (
-                <ol className="list-decimal ml-5 space-y-3 text-sm text-gray-800">
-                    {items.flatMap((item, i) =>
-                        item.summary
-                            .split("\n")
-                            .map(line => line.trim())
-                            .filter(Boolean)
-                            .map((point, idx) => (
-                                <li key={`${i}-${idx}`}>
-                                    {point}
-                                </li>
-                            ))
-                    )}
-                </ol>
-            ) : (
+                return (
+                    <div key={i} className="border-b py-4">
 
-                items.map((item, i) => (
-                    <div key={i} className="border-b py-2">
-                        <span className="text-xs text-gray-500">{item.date}</span>
-                        <p className="font-semibold">{item.title}</p>
-                        <p className="text-xs text-gray-600">{item.meta}</p>
-                        <p className="text-sm whitespace-pre-line">
-                            {item.summary}
-                        </p>
+                        {/* DATE */}
+                        <div className="text-xs text-gray-500 mb-1">
+                            {item.date}
+                        </div>
 
+                        {/* TITLE */}
+                        {isEditing ? (
+                            <input
+                                className="w-full font-semibold text-base mb-2 border rounded px-2 py-1"
+                                value={item.title}
+                                onChange={e =>
+                                    updateItem(sectionKey, i, "title", e.target.value)
+                                }
+                            />
+                        ) : (
+                            <div className="font-semibold text-base mb-2">
+                                {item.title}
+                            </div>
+                        )}
+
+                        {/* SUMMARY */}
+                        {isEditing ? (
+                            <textarea
+                                className="w-full border rounded p-2 text-sm"
+                                value={item.summary}
+                                onChange={e =>
+                                    updateItem(sectionKey, i, "summary", e.target.value)
+                                }
+                            />
+                        ) : numbered ? (
+                            <ol className="list-decimal ml-5 text-sm text-gray-800 leading-relaxed">
+                                {renderNumberedPoints(item.summary)}
+                            </ol>
+                        ) : (
+                            <p className="text-sm text-gray-800 leading-relaxed">
+                                {item.summary}
+                            </p>
+                        )}
+
+                        {/* SOURCE */}
                         {item.source && (
                             <a
                                 href={item.source}
                                 target="_blank"
-                                className="text-cyan-700 text-xs"
+                                className="text-cyan-700 text-xs block mt-2"
                             >
                                 Source
                             </a>
                         )}
-                    </div>
-                ))
-            )}
 
+                        {/* ACTIONS */}
+                        <div className="mt-2 flex gap-3 text-xs print:hidden">
+                            {isEditing ? (
+                                <>
+                                    <button
+                                        className="text-green-700"
+                                        onClick={() => setEditing(null)}
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        className="text-red-600"
+                                        onClick={() => deleteItem(sectionKey, i)}
+                                    >
+                                        Delete
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    className="text-blue-600"
+                                    onClick={() =>
+                                        setEditing({ section: sectionKey, index: i })
+                                    }
+                                >
+                                    Edit
+                                </button>
+                            )}
+                        </div>
+
+                    </div>
+                );
+            })}
         </section>
     );
 
+    // ===============================
+    // RENDER
+    // ===============================
     return (
         <div id="print-area" className="bg-white rounded-xl shadow overflow-hidden">
 
             {/* HEADER */}
-            <header className="bg-gradient-to-r from-cyan-700 to-blue-500 p-6 text-white flex gap-6 items-center">
+             <header className="bg-gradient-to-r from-cyan-700 to-blue-500 p-6 text-white flex gap-6 items-center">
 
                 {/* ⭐ FIXED TRUE BUDDY LOGO (Perfectly aligned) */}
                 <div className="relative inline-block">
@@ -136,11 +216,11 @@ export default function ReportPreview({ reportData }) {
             </header>
 
             {/* CONTENT */}
-            <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {renderSection("INDIA", reportData.india)}
-                {renderSection("INTERNATIONAL", reportData.international)}
-                {renderSection("ANALYSIS", reportData.analysis, true)}
-                {renderSection("RECOMMENDATION", reportData.recommendation, true)}
+            <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ textAlign: "justify", textJustify: "inter-word" }}>
+                {renderSection("india", "INDIA", reportData.india)}
+                {renderSection("international", "INTERNATIONAL", reportData.international)}
+                {renderSection("analysis", "ANALYSIS", reportData.analysis, true)}
+                {renderSection("recommendation", "RECOMMENDATION", reportData.recommendation, true)}
             </div>
 
             {/* ACTIONS */}
@@ -151,7 +231,6 @@ export default function ReportPreview({ reportData }) {
                 >
                     Send Email
                 </button>
-
                 <button
                     className="bg-cyan-700 text-white px-3 py-2 rounded"
                     onClick={() => window.print()}
@@ -159,6 +238,8 @@ export default function ReportPreview({ reportData }) {
                     Print / Save as PDF
                 </button>
             </div>
+
+            {/* FOOTER */}
             <footer className="bg-gradient-to-r from-cyan-700 to-blue-500 text-white px-4 py-3 text-xs">
 
                 {/* Disclaimer */}
@@ -179,38 +260,6 @@ export default function ReportPreview({ reportData }) {
                 </div>
 
             </footer>
-
-            {/* EMAIL MODAL */}
-            {showEmailModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg shadow w-96">
-                        <h2 className="text-xl font-bold mb-4">
-                            Send Report via Email
-                        </h2>
-
-                        <input
-                            id="recipientEmail"
-                            type="email"
-                            placeholder="Recipient email"
-                            className="w-full border rounded-md p-2 mb-4"
-                        />
-
-                        <button
-                            className="bg-blue-600 text-white px-4 py-2 rounded mr-2"
-                            onClick={sendEmail}
-                        >
-                            Send
-                        </button>
-
-                        <button
-                            className="bg-gray-400 text-white px-3 py-2 rounded"
-                            onClick={() => setShowEmailModal(false)}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
