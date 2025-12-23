@@ -117,7 +117,7 @@ export default function ReportPreview({ reportData }) {
                 {/* HEADER DETAILS */}
                 <div className="flex flex-col justify-center">
                     <h1
-                        className="text-3xl mt-1 mb-1 drop-shadow-md tracking-wide uppercase font-bold"
+                        className="text-2xl mt-1 mb-1 drop-shadow-md tracking-wide uppercase font-bold"
                         style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                     >
                         {reportData.title}

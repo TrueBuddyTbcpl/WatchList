@@ -92,7 +92,6 @@ export default function DataEditor({ reportData, setReportData }) {
         className="w-full border rounded-md p-2"
         name="title"
         placeholder="Report Title"
-        value={reportData.title}
         onChange={handleInput}
       />
 
