@@ -149,15 +149,29 @@ export default function ReportPreview({ reportData, setReportData }) {
                         )}
 
                         {/* SOURCE */}
-                        {item.source && (
-                            <a
-                                href={item.source}
-                                target="_blank"
-                                className="text-cyan-700 text-xs block mt-2"
-                            >
-                                Source
-                            </a>
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                className="w-full border rounded px-2 py-1 text-xs mt-2"
+                                placeholder="Enter source URL"
+                                value={item.source || ""}
+                                onChange={e =>
+                                    updateItem(sectionKey, i, "source", e.target.value)
+                                }
+                            />
+                        ) : (
+                            item.source && (
+                                <a
+                                    href={item.source}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-cyan-700 text-xs block mt-2 break-all"
+                                >
+                                    Source
+                                </a>
+                            )
                         )}
+
 
                         {/* ACTIONS */}
                         <div className="mt-2 flex gap-3 text-xs print:hidden">
