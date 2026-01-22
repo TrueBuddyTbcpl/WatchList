@@ -48,7 +48,6 @@ export default function DataEditor({ reportData, setReportData }) {
       cols.push(value.trim());
 
       return {
-        date: cols[0] || "",
         title: cols[1] || "",
         category: cols[2] || "",
         summary: cols.slice(3, cols.length - 1).join(",").replace(/^"|"$/g, "").trim(),
